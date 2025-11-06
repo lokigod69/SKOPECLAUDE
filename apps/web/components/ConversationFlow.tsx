@@ -5,6 +5,7 @@ import { FormEvent, useEffect, useRef } from "react";
 
 import { clearPersistedConversation } from "../lib/LocalPersistence";
 import { useConversationStore } from "../lib/conversationStore";
+import { GoalNode } from "./GoalNode";
 
 const MOTIONS = {
   initial: { opacity: 0, y: 12 },
@@ -25,7 +26,9 @@ export function ConversationFlow() {
     personality,
     personalityHint,
     adapterName,
-    bootstrap
+    goals,
+    bootstrap,
+    interactWithGoal
   } = useConversationStore((state) => ({
     history: state.history,
     input: state.input,
@@ -38,7 +41,9 @@ export function ConversationFlow() {
     personality: state.personality,
     personalityHint: state.personalityHint,
     adapterName: state.adapterName,
-    bootstrap: state.bootstrap
+    goals: state.goals,
+    bootstrap: state.bootstrap,
+    interactWithGoal: state.interactWithGoal
   }));
   const hasBootstrappedRef = useRef(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -76,6 +81,10 @@ export function ConversationFlow() {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     submit();
+  }
+
+  function handleGoalInteraction(goalId: string, action: "complete" | "skip" | "explore") {
+    interactWithGoal(goalId, action);
   }
 
   return (
@@ -204,6 +213,14 @@ export function ConversationFlow() {
           </button>
         </div>
       </form>
+
+      {goals.length > 0 ? (
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-8">
+          {goals.map((goal) => (
+            <GoalNode key={goal.id} goal={goal} onInteract={(action) => handleGoalInteraction(goal.id, action)} />
+          ))}
+        </div>
+      ) : null}
     </section>
   );
 }

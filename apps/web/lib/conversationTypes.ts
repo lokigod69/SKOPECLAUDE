@@ -27,3 +27,12 @@ export type PersonalitySnapshot = {
   affirmations: string[];
 };
 
+export type GoalState = "dormant" | "suggested" | "active" | "crystallizing" | "integrated";
+
+export type GoalNodeData = {
+  id: string;
+  raw: string;
+  text: string;
+  state: GoalState;
+  engagement: number;
+};

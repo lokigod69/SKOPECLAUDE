@@ -4,7 +4,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ConversationFlow } from "./ConversationFlow";
 import { useConversationStore } from "../lib/conversationStore";
-import type { PersonalitySnapshot } from "../lib/conversationTypes";
 
 const STORAGE_KEY = "goal-app-conversation";
 const ORIGINAL_FETCH = global.fetch;
@@ -23,7 +22,8 @@ function primeStorage() {
     sentiment: "neutral",
     personality: null,
     personalityHint: null,
-    version: 2,
+    goals: [],
+    version: 3,
     updatedAt: new Date().toISOString()
   };
 
@@ -64,23 +64,13 @@ describe("ConversationFlow component", () => {
 
   it("submits a new message and shows assistant reply", async () => {
     const user = userEvent.setup();
-    const personality: PersonalitySnapshot = {
-      stage: "discovering",
-      archetype: "Radiant Explorer",
-      voice: "Gentle curiosity",
-      focus: "Hold the spark softly",
-      affirmations: ["Your pace is already enough."]
-    };
     const mockResponse = {
       ok: true,
       json: async () => ({
-        reply: "Echo: I hear you.",
-        sentiment: { label: "neutral", confidence: 0.4 },
-        meta: {
-          adapter: "deterministic",
-          personalityHint: "Keep the spark within reach.",
-          personality
-        }
+        response: "Echo: I hear you.",
+        emotion: "neutral",
+        sentiment: { tone: "neutral" },
+        personality: { type: "wise_friend", confidence: 0.8 }
       })
     };
 
@@ -95,8 +85,8 @@ describe("ConversationFlow component", () => {
     await waitFor(() => expect(global.fetch).toHaveBeenCalled());
     expect(await screen.findByText(/echo: i hear you/i)).toBeInTheDocument();
     expect(screen.getByText(/sentiment/i)).toHaveTextContent("Sentiment");
-    expect(screen.getByText(/adapter/i)).toHaveTextContent(/deterministic/i);
-    expect(await screen.findByText(/radiant explorer/i)).toBeInTheDocument();
-    expect(screen.getByText(/keep the spark/i)).toBeInTheDocument();
+    expect(screen.getByText(/adapter/i)).toHaveTextContent(/openrouter/i);
+    expect(await screen.findByText(/wise friend\s+-\s+discovering/i)).toBeInTheDocument();
+    expect(screen.getByText(/^wise friend$/i)).toBeInTheDocument();
   });
 });

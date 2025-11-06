@@ -1,6 +1,6 @@
 'use client';
 
-import type { ConversationMessage, PersonalitySnapshot } from "./conversationTypes";
+import type { ConversationMessage, GoalNodeData, PersonalitySnapshot } from "./conversationTypes";
 import type { SentimentTone } from "./palette";
 
 export type PersistedState = {
@@ -8,13 +8,14 @@ export type PersistedState = {
   sentiment: SentimentTone;
   personality: PersonalitySnapshot | null;
   personalityHint: string | null;
+  goals: GoalNodeData[];
   version: number;
   updatedAt: string;
 };
 
 const STORAGE_KEY = "goal-app-conversation";
 const CLIENT_ID_KEY = "goal-app-client-id";
-const CURRENT_VERSION = 2;
+const CURRENT_VERSION = 3;
 
 function isBrowser(): boolean {
   return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
@@ -41,6 +42,7 @@ export function loadPersistedConversation(): PersistedState | null {
       sentiment: parsed.sentiment ?? "neutral",
       personality: parsed.personality ?? null,
       personalityHint: parsed.personalityHint ?? null,
+      goals: parsed.goals ?? [],
       version: CURRENT_VERSION,
       updatedAt: parsed.updatedAt ?? new Date().toISOString()
     };
@@ -51,7 +53,7 @@ export function loadPersistedConversation(): PersistedState | null {
 
 type PersistedSnapshot = Pick<
   PersistedState,
-  "history" | "sentiment" | "personality" | "personalityHint"
+  "history" | "sentiment" | "personality" | "personalityHint" | "goals"
 >;
 
 export function savePersistedConversation(state: PersistedSnapshot): void {
@@ -66,6 +68,7 @@ export function savePersistedConversation(state: PersistedSnapshot): void {
       sentiment: state.sentiment,
       personality: state.personality ?? null,
       personalityHint: state.personalityHint ?? null,
+      goals: state.goals ?? [],
       version: CURRENT_VERSION,
       updatedAt: new Date().toISOString()
     })
