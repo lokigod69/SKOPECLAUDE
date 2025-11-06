@@ -1,0 +1,23 @@
+# dependencies
+node_modules
+.pnp.*
+
+# testing
+coverage
+
+# build output
+dist
+.next
+out
+
+# misc
+.DS_Store
+*.log
+.env
+.env.*
+.data/
+
+# editor
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json

@@ -1,0 +1,14 @@
+{
+  "name": "@goal-app/config",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./eslint": {
+      "default": "./eslint.config.mjs"
+    },
+    "./prettier": {
+      "default": "./prettier.config.mjs"
+    }
+  }
+}
